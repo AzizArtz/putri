@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIXTAPE BUAT KAMU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF9F1C;
+            --yellow: #FFE600;
+            --pink: #FF6B9D;
+            --blue: #4D9FFF;
+            --mint: #7BFFB2;
+            --cream: #FFF4DC;
+            --black: #111;
+            --white: #FFF;
+            --border: 4px solid var(--black);
+            --shadow: 6px 6px 0 var(--black);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--black);
+            background-color: var(--orange);
+            background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.07) 0 2px, transparent 2px 14px);
+            min-height: 100vh;
+            padding: 22px 14px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .wrap { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 18px; }
+
+        header {
+            background: var(--cream);
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 14px 18px;
+            transform: rotate(-1deg);
+        }
+        header h1 { font-size: clamp(1.8rem, 7.5vw, 2.5rem); font-weight: 900; text-transform: uppercase; line-height: 1; }
+        header p { font-weight: 700; margin-top: 6px; font-size: 0.95rem; }
+
+        /* Cassette */
+        .cassette {
+            background: var(--blue);
+            border: 5px solid var(--black);
+            box-shadow: 10px 10px 0 var(--black);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .label-card {
+            background: var(--cream);
+            border: 4px solid var(--black);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .label-title { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
+        .label-sub { font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; }
+
+        .window {
+            background: var(--black);
+            border: 4px solid var(--black);
+            padding: 14px 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .reel {
+            width: 78px; height: 78px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 5px solid var(--yellow);
+            position: relative;
+        }
+        .reel::after {
+            content: "";
+            position: absolute;
+            left: 50%; top: 50%;
+            width: 18px; height: 18px;
+            margin: -9px 0 0 -9px;
+            background: var(--black);
+            border-radius: 50%;
+        }
+        .reel.spin { animation: spin 1.2s linear infinite; }
+        .reel.slow { animation: spin 3s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .reel-spoke {
+            position: absolute;
+            left: 50%; top: 50%;
+            width: 6px; height: 40%;
+            background: var(--black);
+            transform-origin: top center;
+            margin-left: -3px;
+            margin-top: 0;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .ctl {
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            background: var(--white);
+            border: 4px solid var(--black);
+            box-shadow: 3px 3px 0 var(--black);
+            padding: 10px 0;
+            cursor: pointer;
+            transition: transform 0.08s, box-shadow 0.08s;
+        }
+        .ctl:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--black); }
+        .ctl:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--black); }
+        .ctl.on { background: var(--yellow); }
+
+        /* Track list */
+        .tracks {
+            background: var(--white);
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tracks-head { font-weight: 900; text-transform: uppercase; font-size: 0.9rem; background: var(--black); color: var(--white); padding: 5px 10px; align-self: flex-start; }
+        .track {
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 0.95rem;
+            text-align: left;
+            background: var(--paper, #FFFDF5);
+            border: 3px solid var(--black);
+            box-shadow: 3px 3px 0 var(--black);
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.08s, background 0.1s;
+        }
+        .track:hover { transform: translate(-2px, -2px); background: var(--mint); }
+        .track:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--black); }
+        .track .num { font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+        .track .time { font-family: 'Space Mono', monospace; font-size: 0.75rem; opacity: 0.7; }
+        .track.playing { background: var(--pink); color: var(--white); }
+
+        /* Now playing lyric */
+        .lyric {
+            display: none;
+            background: var(--yellow);
+            border: var(--border);
+            box-shadow: var(--shadow);
+            padding: 18px;
+            flex-direction: column;
+            gap: 10px;
+            transform: rotate(1deg);
+        }
+        .lyric.show { display: flex; animation: pop 0.35s ease; }
+        @keyframes pop {
+            0% { transform: scale(0.94) rotate(1deg); opacity: 0; }
+            100% { transform: scale(1) rotate(1deg); opacity: 1; }
+        }
+        .lyric-tag { align-self: flex-start; background: var(--black); color: var(--white); font-weight: 900; font-size: 0.72rem; text-transform: uppercase; padding: 3px 8px; }
+        .lyric-title { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; }
+        .lyric-text { background: var(--white); border: 3px solid var(--black); padding: 12px; font-weight: 700; font-size: 1.05rem; line-height: 1.45; }
+
+        .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn {
+            font-family: inherit;
+            font-weight: 900;
+            font-size: 0.92rem;
+            text-transform: uppercase;
+            background: var(--white);
+            color: var(--black);
+            border: 4px solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            padding: 12px 10px;
+            cursor: pointer;
+            transition: transform 0.08s, box-shadow 0.08s;
+        }
+        .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--black); }
+        .btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--black); }
+        .btn-mint { background: var(--mint); }
+        .btn-blue { background: var(--blue); }
+
+        footer {
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: var(--white);
+            border: 3px solid var(--black);
+            padding: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: var(--black);
+            color: var(--white);
+            font-weight: 900;
+            padding: 12px 18px;
+            box-shadow: 4px 4px 0 var(--pink);
+            transition: transform 0.25s;
+            z-index: 60;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <header>
+        <h1>Lima lagu satu orang</h1>
+        <p>Katanya perasaan bisa disampaikan lewat lagu. Jadi, kali ini aku pinjam lima lagu buat ngomongin satu orang.</p>
+    </header>
+
+    <section class="cassette">
+        <div class="label-card">
+            <div class="label-title">Side A: Hanya Kamu</div>
+            <div class="label-sub">Edisi terbatas, nggak dijual</div>
+        </div>
+
+        <div class="window">
+            <div class="reel" id="reelL"></div>
+            <div class="reel" id="reelR"></div>
+        </div>
+
+        <div class="controls">
+            <button class="ctl" id="playBtn">▶ Play</button>
+            <button class="ctl" id="pauseBtn">❚❚ Pause</button>
+            <button class="ctl" id="stopBtn">■ Stop</button>
+            <button class="ctl" id="rewBtn">« Rew</button>
+        </div>
+    </section>
+
+    <section class="tracks">
+        <span class="tracks-head">Daftar Lagu</span>
+        <div id="trackList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </section>
+
+    <section class="lyric" id="lyric">
+        <span class="lyric-tag" id="lyricTag">Pesan yang diputar</span>
+        <div class="lyric-title" id="lyricTitle"></div>
+        <div class="lyric-text" id="lyricText"></div>
+        <div class="btns">
+            <button class="btn btn-mint" id="copyBtn">Salin Pesan</button>
+            <button class="btn btn-blue" id="waBtn">Kirim pesan</button>
+        </div>
+    </section>
+
+    <footer>Kasetnya boleh selesai. Kalau soal kamu, aku belum punya tombol stop</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+<audio id="audioPlayer" preload="none"></audio>
+
+<script>
+    const $ = id => document.getElementById(id);
+
+    const TRACKS = [
+        { title: "Sebelum kamu tahu",       time: "3:12", line: "aku sempat bingung mau mulai dari mana. Terus aku sadar, akhir-akhir ini hampir semua hal yang pengin aku ceritain selalu berujung ke kamu", src:"asset/song1.mp3" },
+        { title: "Hal Kecil Bernama Putri", time: "2:48", line: "Lucu ya, satu orang bisa bikin hari biasa terasa beda. Padahal kamu cuma jadi diri sendiri, sementara aku yang repot senyum-senyum sendiri", src:"asset/song2.mp3"},
+        { title: "Kalau sama kamu",        time: "4:05", line: "Aku nggak butuh tempat yang bagus atau obrolan yang hebat. Kadang aku cuma pengin duduk di samping kamu, ngomongin hal nggak penting, terus lupa kalau waktu ternyata jalan terus.", src:"asset/song3.mp3" },
+        { title: "Gangguan favorit",  time: "3:30", line: "Kamu tuh aneh. Lagi sibuk pun bisa tiba-tiba kepikiran kamu. Lagi santai juga kepikiran kamu aku mulai curiga ini bukan kebetulan, tapi ya masa aku laporin ke polisi", src:"asset/song4.mp3" },
+        { title: "Kalau boleh jujur",       time: "2:55", line: "Aku ggak tahu nanti kita bakal jadi apa. Tapi kalau suatu hari kamu penasaran siapa yang diam-diam senang setiap kali kamu hadir, semoga kamu ingat kalau aku pernah jadi salah satunya. Dan mungkin, masih", src:"asset/song5.mp3" }
+    ];
+
+    let current = -1;
+    let playing = false;
+    let lastLine = "";
+    let lastTitle = "";
+
+    function showToast(msg) {
+        const t = $("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => t.classList.remove("show"), 1800);
+    }
+
+    function renderTracks() {
+        const wrap = $("trackList");
+        wrap.innerHTML = "";
+        TRACKS.forEach((t, i) => {
+            const b = document.createElement("button");
+            b.className = "track" + (i === current ? " playing" : "");
+            b.innerHTML = `<span><span class="num">${String(i + 1).padStart(2, "0")}.</span> ${t.title}</span><span class="time">${t.time}</span>`;
+            b.addEventListener("click", () => playTrack(i));
+            wrap.appendChild(b);
+        });
+    }
+
+    function setReels(on) {
+        ["reelL", "reelR"].forEach(id => {
+            const r = $(id);
+            r.classList.toggle("spin", on);
+            r.classList.toggle("slow", false);
+        });
+    }
+
+    function playTrack(i) {
+        current = i;
+        playing = true;
+        setReels(true);
+        $("playBtn").classList.add("on");
+        $("pauseBtn").classList.remove("on");
+
+        const t = TRACKS[i];
+        lastTitle = t.title;
+        lastLine = t.line;
+        const audio = $("audioPlayer");
+
+audio.src = t.src;
+audio.currentTime = 0;
+
+audio.play().catch(() => {
+    showToast("Lagu gagal diputar. Coba tekan Play lagi.");
+});
+
+        $("lyricTag").textContent = "Lagu " + (i + 1) + " • " + t.time;
+        $("lyricTitle").textContent = t.title;
+        $("lyricText").textContent = "\u201C" + t.line + "\u201D";
+
+        const lyric = $("lyric");
+        lyric.classList.remove("show");
+        void lyric.offsetWidth;
+        lyric.classList.add("show");
+        renderTracks();
+
+        setTimeout(() => lyric.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
+    }
+
+    function pause() {
+        if (current < 0) return;
+        playing = false;
+        setReels(false);
+        $("playBtn").classList.remove("on");
+        $("pauseBtn").classList.add("on");
+        $("audioPlayer").pause();
+    }
+
+    function stop() {
+        playing = false;
+        current = -1;
+        setReels(false);
+        $("playBtn").classList.remove("on");
+        $("pauseBtn").classList.remove("on");
+        $("lyric").classList.remove("show");
+        renderTracks();
+        const audio = $("audioPlayer");
+audio.pause();
+audio.currentTime = 0;
+audio.removeAttribute("src");
+audio.load();
+    }
+
+    function rewind() {
+        if (current < 0) { showToast("Pilih lagu dulu."); return; }
+        playTrack(Math.max(0, current - 1));
+    }
+
+    async function copyText(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (e) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            ta.remove();
+        }
+    }
+
+    function messageText() {
+        return `Mixtape buat kamu - ${lastTitle}:\n"${lastLine}"`;
+    }
+
+    $("playBtn").addEventListener("click", () => {
+    const audio = $("audioPlayer");
+
+    if (current < 0) {
+        playTrack(0);
+        return;
+    }
+
+    audio.play().catch(() => {
+        showToast("Lagu gagal diputar.");
+    });
+
+    playing = true;
+    setReels(true);
+    $("playBtn").classList.add("on");
+    $("pauseBtn").classList.remove("on");
+});
+    $("pauseBtn").addEventListener("click", pause);
+    $("stopBtn").addEventListener("click", stop);
+    $("rewBtn").addEventListener("click", rewind);
+
+    $("copyBtn").addEventListener("click", async () => {
+        if (!lastLine) { showToast("Pilih lagu dulu."); return; }
+        await copyText(messageText());
+        showToast("Pesan tersalin!");
+    });
+
+    $("waBtn").addEventListener("click", () => {
+        if (!lastLine) { showToast("Pilih lagu dulu."); return; }
+        window.open("https://t.me/share/url?text=" + encodeURIComponent(messageText()), "_blank");
+    });
+
+    renderTracks();
+</script>
+</body>
+</html>
